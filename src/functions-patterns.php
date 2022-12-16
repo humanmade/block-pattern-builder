@@ -12,6 +12,7 @@
 namespace BlockPatternBuilder;
 
 use WP_Query, WP_Term_Query;
+use function tad\WPBrowser\slug;
 
 # Don't execute code if file is accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -76,13 +77,23 @@ function register_patterns(): void
 			$patterns->the_post();
 			global $post;
 
-			$pattern_categories = wp_get_post_terms( $post->ID, 'bpb_pattern_category', [ 'fields' => 'slugs' ] );
+			$pattern_categories = wp_get_post_terms($post->ID, 'bpb_pattern_category', ['fields' => 'slugs']);
+
+			$post_title = wp_strip_all_tags($post->post_title);
+			$post_content = $post->post_content;
+			preg_match('/"className":.?"bpb-pattern/m', $post_content, $matches, PREG_OFFSET_CAPTURE, 0);
+			if (empty($matches)) {
+				$post_content = sprintf('<!-- wp:group {"className":"bpb-pattern bpb-pattern-%1$s"} -->
+<div class="wp-block-group bpb-pattern bpb-pattern-%1$s">%2$s</div>
+<!-- /wp:group -->', $post->ID, $post_content);
+			}
+
 
 			$register(
-				sprintf( 'bpb/%s', sanitize_key( $post->post_name ) ),
+				sprintf('bpb/%s', sanitize_key($post->post_name)),
 				[
-					'title' => wp_strip_all_tags($post->post_title),
-					'content' => $post->post_content,
+					'title' => $post_title,
+					'content' => $post_content,
 					'categories' => $pattern_categories,
 					'description' => $post->post_excerpt,
 				]
