@@ -30,16 +30,17 @@ add_action( 'load-post-new.php', __NAMESPACE__ . '\\register_patterns' );
  * @since  1.0.0
  * @return void
  */
-function register_patterns() {
+function register_patterns(): void
+{
 
 	$register = false;
 
 	// Assign pattern registration function for Gutenberg 8.1.0+.
-	if ( function_exists( 'register_block_pattern' ) ) {
+	if (function_exists('register_block_pattern')) {
 		$register = 'register_block_pattern';
 
-	// Old registration function pre-8.1.0.
-	} elseif ( function_exists( 'register_pattern' ) ) {
+		// Old registration function pre-8.1.0.
+	} elseif (function_exists('register_pattern')) {
 		$register = 'register_pattern';
 	}
 
@@ -66,7 +67,7 @@ function register_patterns() {
 	// Query all published patterns.
 	$patterns = new WP_Query( [
 		'post_type'    => 'bpb_pattern',
-		'posts_per_page' => -1
+		'posts_per_page' => 100
 	] );
 
 	if ( $patterns->have_posts() ) {
@@ -80,9 +81,9 @@ function register_patterns() {
 			$register(
 				sprintf( 'bpb/%s', sanitize_key( $post->post_name ) ),
 				[
-					'title'       => wp_strip_all_tags( $post->post_title ),
-					'content'     => $post->post_content,
-					'categories'  => $pattern_categories,
+					'title' => wp_strip_all_tags($post->post_title),
+					'content' => $post->post_content,
+					'categories' => $pattern_categories,
 					'description' => $post->post_excerpt,
 				]
 			);
