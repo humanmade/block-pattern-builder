@@ -11,7 +11,8 @@
 
 namespace BlockPatternBuilder;
 
-use WP_Query;
+use WP_Query, WP_Term_Query;
+use function tad\WPBrowser\slug;
 
 # Don't execute code if file is accessed directly.
 defined( 'ABSPATH' ) || exit;
@@ -30,16 +31,17 @@ add_action( 'load-post-new.php', __NAMESPACE__ . '\\register_patterns' );
  * @since  1.0.0
  * @return void
  */
-function register_patterns() {
+function register_patterns(): void
+{
 
 	$register = false;
 
 	// Assign pattern registration function for Gutenberg 8.1.0+.
-	if ( function_exists( 'register_block_pattern' ) ) {
+	if (function_exists('register_block_pattern')) {
 		$register = 'register_block_pattern';
 
-	// Old registration function pre-8.1.0.
-	} elseif ( function_exists( 'register_pattern' ) ) {
+		// Old registration function pre-8.1.0.
+	} elseif (function_exists('register_pattern')) {
 		$register = 'register_pattern';
 	}
 
@@ -48,10 +50,25 @@ function register_patterns() {
 		return;
 	}
 
+	// Query all pattern categories.
+	$pattern_categories = new WP_Term_Query( [
+		'taxonomy' => 'bpb_pattern_category',
+		'fields'   => 'all',
+ 	] );
+
+	if( $pattern_categories->terms ) {
+		foreach ( $pattern_categories->terms as $term ) {
+			register_block_pattern_category(
+				$term->name,
+				[ 'label' => $term->slug ]
+			);
+		}
+	}
+
 	// Query all published patterns.
 	$patterns = new WP_Query( [
 		'post_type'    => 'bpb_pattern',
-		'number_posts' => -1
+		'posts_per_page' => 100
 	] );
 
 	if ( $patterns->have_posts() ) {
@@ -60,12 +77,25 @@ function register_patterns() {
 			$patterns->the_post();
 			global $post;
 
+			$pattern_categories = wp_get_post_terms($post->ID, 'bpb_pattern_category', ['fields' => 'slugs']);
+
+			$post_title = wp_strip_all_tags($post->post_title);
+			$post_content = $post->post_content;
+			preg_match('/"className":.?"bpb-pattern/m', $post_content, $matches, PREG_OFFSET_CAPTURE, 0);
+			if (empty($matches)) {
+				$post_content = sprintf('<!-- wp:group {"className":"bpb-pattern bpb-pattern-%1$s"} -->
+<div class="wp-block-group bpb-pattern bpb-pattern-%1$s">%2$s</div>
+<!-- /wp:group -->', $post->ID, $post_content);
+			}
+
+
 			$register(
-				sprintf( 'bpb/%s', sanitize_key( $post->post_name ) ),
+				sprintf('bpb/%s', sanitize_key($post->post_name)),
 				[
-					'title'       => wp_strip_all_tags( $post->post_title ),
-					'content'     => $post->post_content,
-					'description' => $post->post_excerpt
+					'title' => $post_title,
+					'content' => $post_content,
+					'categories' => $pattern_categories,
+					'description' => $post->post_excerpt,
 				]
 			);
 		}

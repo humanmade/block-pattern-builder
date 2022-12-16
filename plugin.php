@@ -38,9 +38,9 @@ register_activation_hook( __FILE__, function() {
 /**
  * Wrapper for the plugin instance.
  *
+ * @return Plugin
  * @since  1.1.0
  * @access public
- * @return void
  */
 function plugin() {
 	static $instance = null;
@@ -58,6 +58,7 @@ function plugin() {
 # Bootstrap plugin.
 require_once 'src/Editor.php';
 require_once 'src/Plugin.php';
+require_once 'src/functions-taxonomies.php';
 require_once 'src/functions-post-types.php';
 require_once 'src/functions-patterns.php';
 

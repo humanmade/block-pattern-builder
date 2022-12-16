@@ -1,0 +1,7 @@
+{
+  "name": "humanmade/block-pattern-builder",
+  "description": "forked from justintadlock/block-pattern-builder",
+  "type": "wordpress-plugin",
+  "license": "GPL 2+",
+  "require": {}
+}
