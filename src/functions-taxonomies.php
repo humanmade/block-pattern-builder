@@ -25,17 +25,17 @@ add_action('init', __NAMESPACE__ . '\\register_taxonomies');
  * @access public
  * @return void
  */
-function register_taxonomies()
+function register_taxonomies(): void
 {
 	$labels = [
-		'name'                       => _x('Categories', 'Taxonomy General Name', 'block-pattern-builder'),
-		'singular_name'              => _x('Category', 'Taxonomy Singular Name', 'block-pattern-builder'),
-		'menu_name'                  => __('Category', 'block-pattern-builder'),
-		'all_items'                  => __('All Categories', 'block-pattern-builder'),
-		'parent_item'                => __('Parent Category', 'block-pattern-builder'),
-		'parent_item_colon'          => __('Parent category:', 'block-pattern-builder'),
-		'new_item_name'              => __('New Category Name', 'block-pattern-builder'),
-		'add_new_item'               => __('Add New Category', 'block-pattern-builder'),
+		'name' => _x('Categories', 'Taxonomy General Name', 'block-pattern-builder'),
+		'singular_name' => _x('Category', 'Taxonomy Singular Name', 'block-pattern-builder'),
+		'menu_name' => __('Category', 'block-pattern-builder'),
+		'all_items' => __('All Categories', 'block-pattern-builder'),
+		'parent_item' => __('Parent Category', 'block-pattern-builder'),
+		'parent_item_colon' => __('Parent category:', 'block-pattern-builder'),
+		'new_item_name' => __('New Category Name', 'block-pattern-builder'),
+		'add_new_item' => __('Add New Category', 'block-pattern-builder'),
 		'edit_item'                  => __('Edit Category', 'block-pattern-builder'),
 		'update_item'                => __('Update Category', 'block-pattern-builder'),
 		'view_item'                  => __('View Category', 'block-pattern-builder'),
