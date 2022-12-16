@@ -38,9 +38,9 @@ register_activation_hook( __FILE__, function() {
 /**
  * Wrapper for the plugin instance.
  *
+ * @return Plugin
  * @since  1.1.0
  * @access public
- * @return void
  */
 function plugin() {
 	static $instance = null;
